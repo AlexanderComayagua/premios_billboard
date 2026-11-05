@@ -1,0 +1,24 @@
+{
+    "nombre_modelo": "Árbol de Decisiones para Predicción de Billboard Top 1",
+    "tipo_modelo": "Clasificación supervisada (Decision Tree)",
+    "variables_numericas": [
+        "durationSeg",
+        "anioNacimiento"
+    ],
+    "variables_categoricas": [
+        "artist_type",
+        "tempo",
+        "genre",
+        "mood"
+    ],
+    "mapa_top": {
+        "0": "No llegó al Top 1",
+        "1": "Sí llegó al Top 1"
+    },
+    "archivos_generados": [
+        "decision_tree_billboard.pkl",
+        "model_metadata.json",
+        "app.py",
+        "requirements.txt"
+    ]
+}
