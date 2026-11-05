@@ -8,21 +8,14 @@ st.title('Predicción de éxito en Billboard - Cristopher Flores - ISC - Campus 
 
 @st.cache_resource
 def cargar_modelo():
-    # El archivo subido real se llama 'modelo' pero probaremos los nombres comunes.
-    # Segun el log de joblib (pkl source), el dict tiene 'modelo' y 'columnas'.
-    pkl = 'modelo'
-    if not os.path.exists(pkl):
-        if os.path.exists('decision_tree_billboard.pkl'):
-            pkl = 'decision_tree_billboard.pkl'
-        elif os.path.exists('modelo.pkl'):
-            pkl = 'modelo.pkl'
-    
+    # Buscamos exactamente el archivo especificado
+    pkl = 'modelo_billboard.pkl'
     meta = 'model_metadata.json'
     
-    # El archivo es un diccionario que contiene {'modelo': <objeto_arbol>, 'columnas': <lista>}
+    # Cargar el archivo
     data_dict = joblib.load(pkl)
     
-    # Extraemos el modelo
+    # Extraemos el modelo dependiendo de cómo se haya guardado
     if isinstance(data_dict, dict) and 'modelo' in data_dict:
         modelo = data_dict['modelo']
     else:
@@ -79,7 +72,6 @@ if enviar:
     cliente_dummy = pd.get_dummies(cliente)
     
     # Cargar las columnas que espera el modelo (guardadas en sus features o metadata)
-    # Segun el volcado de joblib, las variables estan en modelo.feature_names_in_
     columnas_modelo = list(modelo.feature_names_in_)
     
     # Asegurar que el dataframe final tenga exactamente las mismas columnas que el modelo
