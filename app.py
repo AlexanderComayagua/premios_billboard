@@ -8,11 +8,26 @@ st.title('Predicción de éxito en Billboard - Cristopher Flores - ISC - Campus 
 
 @st.cache_resource
 def cargar_modelo():
-    pkl = 'decision_tree_billboard.pkl'
+    # El archivo subido real se llama 'modelo' pero probaremos los nombres comunes.
+    # Segun el log de joblib (pkl source), el dict tiene 'modelo' y 'columnas'.
+    pkl = 'modelo'
+    if not os.path.exists(pkl):
+        if os.path.exists('decision_tree_billboard.pkl'):
+            pkl = 'decision_tree_billboard.pkl'
+        elif os.path.exists('modelo.pkl'):
+            pkl = 'modelo.pkl'
+    
     meta = 'model_metadata.json'
     
-    modelo = joblib.load(pkl)
-
+    # El archivo es un diccionario que contiene {'modelo': <objeto_arbol>, 'columnas': <lista>}
+    data_dict = joblib.load(pkl)
+    
+    # Extraemos el modelo
+    if isinstance(data_dict, dict) and 'modelo' in data_dict:
+        modelo = data_dict['modelo']
+    else:
+        modelo = data_dict # Por si en otra version se guarda directo
+        
     with open(meta, encoding='utf-8') as f:
         metadata = json.load(f)
 
@@ -60,8 +75,23 @@ if enviar:
         'mood': mood
     }])
 
-    # Asegurar que las columnas pasen por el pipeline del modelo
-    prediccion = int(modelo.predict(cliente)[0])
+    # Transformar a las variables dummy que requiere el modelo
+    cliente_dummy = pd.get_dummies(cliente)
+    
+    # Cargar las columnas que espera el modelo (guardadas en sus features o metadata)
+    # Segun el volcado de joblib, las variables estan en modelo.feature_names_in_
+    columnas_modelo = list(modelo.feature_names_in_)
+    
+    # Asegurar que el dataframe final tenga exactamente las mismas columnas que el modelo
+    for col in columnas_modelo:
+        if col not in cliente_dummy.columns:
+            cliente_dummy[col] = 0
+            
+    # Ordenar las columnas para que coincidan exactamente
+    cliente_final = cliente_dummy[columnas_modelo]
+
+    # Predecir
+    prediccion = int(modelo.predict(cliente_final)[0])
     resultado_str = mapa.get(prediccion, 'No definido')
 
     st.subheader(f'Predicción: {resultado_str}')
