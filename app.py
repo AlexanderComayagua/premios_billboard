@@ -134,8 +134,8 @@ if enviar:
 
         except Exception as e:
             st.warning(f'Error con Groq: {e}')
-    else:
-        st.warning('Agregue GROQ_API_KEY en los secretos de Streamlit.')
+    ##else:
+    ##    st.warning('Agregue GROQ_API_KEY en los secretos de Streamlit.')
 
 st.divider()
 st.write('Vista rápida de la base principal')
